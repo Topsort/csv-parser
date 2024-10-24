@@ -2,7 +2,7 @@ const test = require('ava')
 
 const { collect } = require('./helpers/helper')
 
-test.cb('map values', (t) => {
+test('map values', (t) => {
   const headers = []
   const indexes = []
   const mapValues = ({ header, index, value }) => {
@@ -17,13 +17,13 @@ test.cb('map values', (t) => {
     t.is(lines.length, 1, '1 row')
     t.snapshot(headers, 'headers')
     t.snapshot(indexes, 'indexes')
-    t.end()
+    t.pass()
   }
 
   collect('basic', { mapValues }, verify)
 })
 
-test.cb('map last empty value', (t) => {
+test('map last empty value', (t) => {
   const mapValues = ({ value }) => {
     return value === '' ? null : value
   }
@@ -33,7 +33,7 @@ test.cb('map last empty value', (t) => {
     t.is(lines.length, 2, '2 rows')
     t.is(lines[0].name, null, 'name is mapped')
     t.is(lines[0].location, null, 'last value mapped')
-    t.end()
+    t.pass()
   }
 
   collect('empty-columns', { mapValues, headers: ['date', 'name', 'location'] }, verify)

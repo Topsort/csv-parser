@@ -12,23 +12,23 @@ const { collect } = require('./helpers/helper')
 
 const eol = '\n'
 
-test.cb('simple csv', (t) => {
+test('simple csv', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     t.snapshot(lines[0], 'first row')
     t.is(lines.length, 1, '1 row')
-    t.end()
+    t.pass()
   }
 
   collect('basic', verify)
 })
 
-test.cb('supports strings', (t) => {
+test('supports strings', (t) => {
   const parser = csv()
 
   parser.on('data', (data) => {
     t.snapshot(data)
-    t.end()
+    t.pass()
   })
 
   parser.write('hello\n')
@@ -36,46 +36,46 @@ test.cb('supports strings', (t) => {
   parser.end()
 })
 
-test.cb('newlines in a cell', (t) => {
+test('newlines in a cell', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     t.snapshot(lines[0], 'first row')
     t.snapshot(lines[1], 'second row')
     t.snapshot(lines[2], 'fourth row')
     t.is(lines.length, 3, '3 rows')
-    t.end()
+    t.pass()
   }
 
   collect('newlines', verify)
 })
 
-test.cb('raw escaped quotes', (t) => {
+test('raw escaped quotes', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     t.snapshot(lines[0], 'first row')
     t.snapshot(lines[1], 'second row')
     t.snapshot(lines[2], 'third row')
     t.is(lines.length, 3, '3 rows')
-    t.end()
+    t.pass()
   }
 
   collect('escape-quotes', verify)
 })
 
-test.cb('raw escaped quotes and newlines', (t) => {
+test('raw escaped quotes and newlines', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     t.snapshot(lines[0], 'first row')
     t.snapshot(lines[1], 'second row')
     t.snapshot(lines[2], 'third row')
     t.is(lines.length, 3, '3 rows')
-    t.end()
+    t.pass()
   }
 
   collect('quotes+newlines', verify)
 })
 
-test.cb('line with comma in quotes', (t) => {
+test('line with comma in quotes', (t) => {
   const headers = bops.from('a,b,c,d,e\n')
   const line = bops.from('John,Doe,120 any st.,"Anytown, WW",08123\n')
   const correct = JSON.stringify({
@@ -93,11 +93,11 @@ test.cb('line with comma in quotes', (t) => {
 
   parser.once('data', (data) => {
     t.is(JSON.stringify(data), correct)
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('line with newline in quotes', (t) => {
+test('line with newline in quotes', (t) => {
   const headers = bops.from('a,b,c\n')
   const line = bops.from(`1,"ha ${eol}""ha"" ${eol}ha",3\n`)
   const correct = JSON.stringify({ a: '1', b: `ha ${eol}"ha" ${eol}ha`, c: '3' })
@@ -109,11 +109,11 @@ test.cb('line with newline in quotes', (t) => {
 
   parser.once('data', (data) => {
     t.is(JSON.stringify(data), correct)
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('cell with comma in quotes', (t) => {
+test('cell with comma in quotes', (t) => {
   const headers = bops.from('a\n')
   const cell = bops.from('"Anytown, WW"\n')
   const correct = 'Anytown, WW'
@@ -125,11 +125,11 @@ test.cb('cell with comma in quotes', (t) => {
 
   parser.once('data', (data) => {
     t.is(data.a, correct)
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('cell with newline', (t) => {
+test('cell with newline', (t) => {
   const headers = bops.from('a\n')
   const cell = bops.from(`"why ${eol}hello ${eol}there"\n`)
   const correct = `why ${eol}hello ${eol}there`
@@ -141,11 +141,11 @@ test.cb('cell with newline', (t) => {
 
   parser.once('data', (data) => {
     t.is(data.a, correct)
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('cell with escaped quote in quotes', (t) => {
+test('cell with escaped quote in quotes', (t) => {
   const headers = bops.from('a\n')
   const cell = bops.from('"ha ""ha"" ha"\n')
   const correct = 'ha "ha" ha'
@@ -157,11 +157,11 @@ test.cb('cell with escaped quote in quotes', (t) => {
 
   parser.once('data', (data) => {
     t.is(data.a, correct)
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('cell with multibyte character', (t) => {
+test('cell with multibyte character', (t) => {
   const headers = bops.from('a\n')
   const cell = bops.from('this ʤ is multibyte\n')
   const correct = 'this ʤ is multibyte'
@@ -173,11 +173,11 @@ test.cb('cell with multibyte character', (t) => {
 
   parser.once('data', (data) => {
     t.is(data.a, correct, 'multibyte character is preserved')
-    t.end()
+    t.pass()
   })
 })
 
-test.cb('geojson', (t) => {
+test('geojson', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     const lineObj = {
@@ -185,13 +185,13 @@ test.cb('geojson', (t) => {
       coordinates: [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
     }
     t.deepEqual(JSON.parse(lines[1].geojson), lineObj, 'linestrings match')
-    t.end()
+    t.pass()
   }
 
   collect('geojson', verify)
 })
 
-test.cb('empty columns', (t) => {
+test('empty columns', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     function testLine (row) {
@@ -203,13 +203,13 @@ test.cb('empty columns', (t) => {
       t.is(row.c.length, 0, 'Empty column is empty')
     }
     lines.forEach(testLine)
-    t.end()
+    t.pass()
   }
 
   collect('empty-columns', ['a', 'b', 'c'], verify)
 })
 
-test.cb('csv-spectrum', (t) => {
+test('csv-spectrum', (t) => {
   spectrum((err, data) => {
     if (err) throw err
     let pending = data.length
@@ -225,16 +225,16 @@ test.cb('csv-spectrum', (t) => {
     })
     function done () {
       pending--
-      if (pending === 0) t.end()
+      if (pending === 0) t.pass()
     }
   })
 })
 
-test.cb('process all rows', (t) => {
+test('process all rows', (t) => {
   const verify = (err, lines) => {
     t.false(err, 'no err')
     t.is(lines.length, 7268, '7268 rows')
-    t.end()
+    t.pass()
   }
 
   collect('large-dataset', {}, verify)
