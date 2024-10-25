@@ -2,6 +2,12 @@
 import { Transform } from 'stream';
 
 declare namespace csvParser {
+  type CsvParserError = Error & {
+    readonly lineNumber: number;
+    readonly headers: ReadonlyArray<string>;
+    readonly cells: ReadonlyArray<string>;
+  }
+
   type CsvParser = Transform;
 
   interface Options {

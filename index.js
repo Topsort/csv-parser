@@ -17,6 +17,16 @@ const defaults = {
   strict: false
 }
 
+class CsvParserError extends Error {
+  constructor (message, lineNumber, headers, cells) {
+    super(message)
+    this.name = 'CsvParserError'
+    this.lineNumber = lineNumber
+    this.headers = headers
+    this.cells = cells
+  }
+}
+
 class CsvParser extends Transform {
   constructor (opts = {}) {
     super({ objectMode: true, highWaterMark: 16 })
@@ -160,7 +170,12 @@ class CsvParser extends Transform {
     }
 
     if (!skip && this.options.strict && cells.length !== this.headers.length) {
-      const e = new RangeError('Row length does not match headers')
+      const e = new CsvParserError(
+        `Row length (${cells.length}) does not match headers (${this.headers.length})`,
+        this.state.lineNumber,
+        this.headers,
+        cells
+      )
       this.emit('error', e)
     } else {
       if (!skip) this.writeRow(cells)
@@ -221,7 +236,14 @@ class CsvParser extends Transform {
 
       this.state.rowLength++
       if (this.state.rowLength > this.options.maxRowBytes) {
-        return cb(new Error('Row exceeds the maximum size'))
+        return cb(
+          new CsvParserError(
+            `Row length (${this.state.rowLength}) exceeds the maximum size (${this.options.maxRowBytes})`,
+            this.state.lineNumber,
+            this.headers,
+            []
+          )
+        )
       }
 
       if (!this.state.escaped && chr === escape && nextChr === quote && i !== start) {
